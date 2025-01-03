@@ -1,7 +1,14 @@
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 export const decryptAES = (encryptedText, key) => {
-    // console.log(encryptedText,key)
-    const bytes = CryptoJS.AES.decrypt(encryptedText, key);
-  return bytes.toString(CryptoJS.enc.Utf8); // Convert back to the original text
-};
+ 
+    try {
+        const bytes = CryptoJS.AES.decrypt(encryptedText, "Secret123");
+        const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+        return decryptedText;
+    }
+    catch (e) {
+        console.log(e);
+        throw new Error("Failed to decrypt AES text. Check the key and encrypted text.");
+    }
+}

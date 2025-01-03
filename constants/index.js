@@ -6,7 +6,13 @@ export const CRYPTO_ALGOS = [
     { value: "rsa", label: "RSA" },
     { value: "chacha", label: "ChaCha" },
 ];
-export const DECRYPT_KEY_AES = "SecretKey123";    // Example AES key
-export const DECRYPT_KEY_RSA = "RSASecretKey456";    // Example RSA key
-export const DECRYPT_KEY_SSH = "SSHSecretKey789";    // Example SSH key
-export const SAMPLE_TEXT = "U2FsdGVkX1+1mhxIhGjNHnTfZaqcWn6XufgA7kML5vA="
+export const DECRYPT_KEY_AES = "SecretKey123";    
+// export const DECRYPT_KEY_RSA = "RSASecretKey456";    
+// export const DECRYPT_KEY_SSH = "SSHSecretKey789";
+export const SAMPLE_TEXT = "U2FsdGVkX18scpMIUOWxUr16+ldWGszS5R0BZH6CnQ7RQt1qUcHO2m1Zv3nodT2ueVApNVbnLwkJJz5ENyvsFg=="; 
+
+export const OBJ = {
+    greeting: "Hello",
+    recipient: "World",
+};
+

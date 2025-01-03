@@ -1,12 +1,19 @@
-import React, { useState } from "react";
-import { PORT, BACKEND_URL, CRYPTO_ALGOS, DECRYPT_KEY_AES,SAMPLE_TEXT} from "../constants";
+import React, { useEffect, useState } from "react";
+import CryptoJS from "crypto-js";
+import {
+  PORT,
+  BACKEND_URL,
+  CRYPTO_ALGOS,
+  DECRYPT_KEY_AES,
+  SAMPLE_TEXT,
+  OBJ,
+} from "../constants";
 import { decryptAES } from "../utils/"; // Import the decrypt function
-import { enc } from "crypto-js";
 
 export default function HomePage() {
   const [selectedAlgo, setSelectedAlgo] = useState("");
-  const [encryptedText, setEncryptedText] = useState(SAMPLE_TEXT); // Store encrypted text
-  const [decryptedText, setDecryptedText] = useState("123"); // Store decrypted text
+  const plainText = JSON.stringify(OBJ);
+  const ciphertext = CryptoJS.AES.encrypt(plainText, "Secret123").toString();
 
   const handleAlgoChange = (e) => {
     setSelectedAlgo(e.target.value);
@@ -38,11 +45,8 @@ export default function HomePage() {
 
   const handleDecryptAES = () => {
     try {
-      // console.log(encryptedText,DECRYPT_KEY_AES)
-      console.log(decryptAES)
-      const decrypted = decryptAES(encryptedText, DECRYPT_KEY_AES);
-      // console.log(decrypted);
-      setDecryptedText(decrypted);
+      const decrypted = decryptAES(ciphertext, DECRYPT_KEY_AES);
+      console.log(decrypted);
     } catch (err) {
       console.log("Decryption failed:", err.message);
     }
@@ -64,12 +68,17 @@ export default function HomePage() {
             </option>
           ))}
         </select>
-        <div className="text-center p-4">Selected algorithm: {selectedAlgo}</div>
+        <div className="text-center p-4">
+          Selected algorithm: {selectedAlgo}
+        </div>
         <button
           onClick={handleEncrypt}
-          className='bg-blue-600 text-white rounded h-8 hover:bg-blue-700 transition-colors w-full'
-        > Encrypt Text</button>
-          
+          className="bg-blue-600 text-white rounded h-8 hover:bg-blue-700 transition-colors w-full"
+        >
+          {" "}
+          Encrypt Text
+        </button>
+
         {/* Decrypt Buttons */}
         <button
           onClick={handleDecryptAES}
@@ -81,7 +90,7 @@ export default function HomePage() {
         <button
           onClick={handleDecryptAES}
           className="bg-green-600 text-white rounded h-10 hover:bg-green-700 transition-colors w-full"
-          disabled={!encryptedText} // Disable if no encrypted text
+        
         >
           Decrypt using AES
         </button>
@@ -93,19 +102,11 @@ export default function HomePage() {
           Decrypt using AES
         </button>
 
-        {encryptedText && (
+    
           <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
             <h2 className="text-lg font-semibold">Encrypted Text:</h2>
-            <p className="break-all">{encryptedText}</p>
+            <p className="break-all">{ciphertext}</p>
           </div>
-        )}
-
-        {decryptedText && (
-          <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded">
-            <h2 className="text-lg font-semibold">Decrypted Text:</h2>
-            <p className="break-all">{decryptedText}</p>
-          </div>
-        )}
 
       </div>
     </div>
