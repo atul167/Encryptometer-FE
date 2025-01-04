@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import CryptoJS from "crypto-js";
+import CryptoJS, { AES } from "crypto-js";
 import Crypto from "crypto";
 import {
   PORT,
@@ -10,6 +10,10 @@ import {
   OBJ,
 } from "../constants";
 import { decryptAES } from "../utils/";
+
+const AES128SecretKey = process.env.NEXT_PUBLIC_AES_128_SECRET_KEY;
+const AES256SecretKey = process.env.NEXT_PUBLIC_AES_256_SECRET_KEY;
+const ChaChaSecretKey = process.env.NEXT_PUBLIC_CHA_CHA_20_SECRET_KEY;
 
 export default function HomePage() {
   const [selectedAlgo, setSelectedAlgo] = useState("");
@@ -41,7 +45,7 @@ export default function HomePage() {
       const ciphertext = data.encryptedData;
       const iv = data.iv;
       console.log("Encrypted Info:", ciphertext, iv);
-      decryptAES(ciphertext, DECRYPT_KEY_AES, iv);
+      decryptAES(ciphertext, AES256SecretKey, iv);
     } catch (err) {
       console.log(err.message);
     }
