@@ -9,12 +9,10 @@ import {
   SAMPLE_TEXT,
   OBJ,
 } from "../constants";
-import { decryptAES } from "../utils/"; // Import the decrypt function
+import { decryptAES } from "../utils/";
 
 export default function HomePage() {
   const [selectedAlgo, setSelectedAlgo] = useState("");
-  // const [ciphertext, setCiphertext] = useState("");
-  // const [iv, setIv] = useState("");
   const handleAlgoChange = (e) => {
     setSelectedAlgo(e.target.value);
   };
@@ -81,7 +79,7 @@ export default function HomePage() {
           className="bg-blue-600 text-white rounded h-8 hover:bg-blue-700 transition-colors w-full"
         >
           {" "}
-          Encrypt Text
+          Get Details
         </button>
 
         {/* Decrypt Buttons */}
@@ -92,19 +90,6 @@ export default function HomePage() {
           Decrypt using AES
         </button>
 
-        <button
-          onClick={handleDecryptAES}
-          className="bg-green-600 text-white rounded h-10 hover:bg-green-700 transition-colors w-full"
-        >
-          Decrypt using AES
-        </button>
-
-        <button
-          onClick={handleDecryptAES}
-          className="bg-purple-600 text-white rounded h-10 hover:bg-purple-700 transition-colors w-full"
-        >
-          Decrypt using AES
-        </button>
 
         <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
           <h2 className="text-lg font-semibold">Encrypted Text:</h2>
