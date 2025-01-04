@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
+import Crypto from "crypto";
 import {
   PORT,
   BACKEND_URL,
@@ -12,46 +13,50 @@ import { decryptAES } from "../utils/"; // Import the decrypt function
 
 export default function HomePage() {
   const [selectedAlgo, setSelectedAlgo] = useState("");
-  const plainText = JSON.stringify(OBJ);
-  const ciphertext = CryptoJS.AES.encrypt(plainText, "Secret123").toString();
-
+  // const [ciphertext, setCiphertext] = useState("");
+  // const [iv, setIv] = useState("");
   const handleAlgoChange = (e) => {
     setSelectedAlgo(e.target.value);
   };
 
   const handleEncrypt = async () => {
     if (!selectedAlgo) {
-      console.log("Select please");
+      console.log("Please select an algorithm.");
       return;
     }
     try {
-      const response = await fetch(`${BACKEND_URL}:${PORT}/api/encrypt`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          algorithm: selectedAlgo,
-        }),
-      });
+      const response = await fetch(
+        `${BACKEND_URL}:${PORT}/test/api/encrypt?algorithm=${encodeURIComponent(
+          selectedAlgo
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
       const data = await response.json();
+      const ciphertext = data.encryptedData;
+      const iv = data.iv;
+      console.log("Encrypted Info:", ciphertext, iv);
+      decryptAES(ciphertext, DECRYPT_KEY_AES, iv);
     } catch (err) {
       console.log(err.message);
     }
   };
 
-  const handleDecryptAES = () => {
-    try {
-      const decrypted = decryptAES(ciphertext, DECRYPT_KEY_AES);
-      console.log(decrypted);
-    } catch (err) {
-      console.log("Decryption failed:", err.message);
+  const handleDecryptAES = (ciphertext, key, iv) => {
+    const decrypted = decryptAES(ciphertext, key, iv);
+    if (decrypted) {
+      console.log("Decrypted Text:", decrypted);
+    } else {
+      console.log("Decryption failed.");
     }
   };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
       <h1 className="text-3xl font-bold mb-6">Encrypt/Decrypt</h1>
@@ -90,7 +95,6 @@ export default function HomePage() {
         <button
           onClick={handleDecryptAES}
           className="bg-green-600 text-white rounded h-10 hover:bg-green-700 transition-colors w-full"
-        
         >
           Decrypt using AES
         </button>
@@ -102,12 +106,9 @@ export default function HomePage() {
           Decrypt using AES
         </button>
 
-    
-          <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-            <h2 className="text-lg font-semibold">Encrypted Text:</h2>
-            <p className="break-all">{ciphertext}</p>
-          </div>
-
+        <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+          <h2 className="text-lg font-semibold">Encrypted Text:</h2>
+        </div>
       </div>
     </div>
   );
