@@ -37,7 +37,6 @@ export default function HomePage() {
         iv,
         authTag
       );
-      console.log(decryptedData)
       setTimeTaken(timeTaken);
     } catch (err) {
       console.log(err.message);
@@ -45,31 +44,36 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center mt-[50px]">
-      <h1 className="text-3xl font-bold mb-6">Encryption Analysis</h1>
-      <div className="w-full max-w-md space-y-4">
-        <select
-          value={selectedAlgo}
-          onChange={handleAlgoChange}
-          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 w-full"
-        >
-          <option value="">-- Choose Algorithm --</option>
-          {CRYPTO_ALGOS.map((algo) => (
-            <option key={algo.value} value={algo.value}>
-              {algo.label}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleDecrypt}
-          className="bg-blue-600 text-white rounded h-8 hover:bg-blue-700 transition-colors w-full"
-        >
-          {selectedAlgo
-            ? `Decrypt using ${selectedAlgo}`
-            : "Please select an algorithm"}
-        </button>
+    <div className="flex flex-col items-center w-full h-screen">
+      <h1 className="text-3xl font-bold m-[100px]">Encryption Analysis</h1>
+      <div className="flex flex-col items-center gap-[50px]">
+        <div className="w-[400px] space-y-4">
+          <select
+            value={selectedAlgo}
+            onChange={handleAlgoChange}
+            className="border border-black rounded-lg cursor-pointer py-2 focus:outline-none w-full"
+          >
+            <option value="">-- Choose Algorithm --</option>
+            {CRYPTO_ALGOS.map((algo) => (
+              <option key={algo.value} value={algo.value}>
+                {algo.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handleDecrypt}
+            className="bg-black border-black border text-white rounded h-8 hover:bg-white hover:text-black w-full"
+          >
+            {selectedAlgo
+              ? `Decrypt using ${selectedAlgo}`
+              : "Please select an algorithm"}
+          </button>
+        </div>
+        <div className="flex flex-col justify-center items-center gap-[10px]">
+          <span className="text-[20px]">Time taken to decrypt</span>
+          <span className="text-[40px] font-bold">{timeTaken}ms</span>
+        </div>
       </div>
-      <div>Time taken to decrypt: {timeTaken}ms</div>
     </div>
   );
 }
