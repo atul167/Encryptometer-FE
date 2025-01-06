@@ -30,11 +30,14 @@ export default function HomePage() {
       const data = await response.json();
       const ciphertext = data.encryptedData;
       const iv = data.iv;
+      const authTag = data.authTag;
       const { decryptedData, timeTaken } = await decrypt(
         ciphertext,
         selectedAlgo,
-        iv
+        iv,
+        authTag
       );
+      console.log(decryptedData)
       setTimeTaken(timeTaken);
     } catch (err) {
       console.log(err.message);
