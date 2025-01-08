@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PORT, BACKEND_URL, CRYPTO_ALGOS } from "../constants";
-import { decrypt } from "../utils/decrypt";
+import { getKeys } from "@/utils/getKeys";
 
 export default function HomePage() {
   const [selectedAlgo, setSelectedAlgo] = useState("");
   const [timeTaken, setTimeTaken] = useState(0);
+
+  const workerRef = useRef(null);
+  const keys = getKeys();
+
   const handleAlgoChange = (e) => {
     setSelectedAlgo(e.target.value);
   };
 
   const handleDecrypt = async () => {
-    if (!selectedAlgo) {
-      console.log("Please select an algorithm.");
-      return;
-    }
     try {
-      const url = `${BACKEND_URL}:${PORT}/test/api/encrypt?algorithm=${encodeURIComponent(
+      const url = `${BACKEND_URL}/test/api/encrypt?algorithm=${encodeURIComponent(
         selectedAlgo
       )}`;
       const response = await fetch(url, {
@@ -27,27 +27,54 @@ export default function HomePage() {
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
+
       const data = await response.json();
-      const ciphertext = data.encryptedData;
-      const iv = data.iv;
-      const authTag = data.authTag;
-      const { decryptedData, timeTaken } = await decrypt(
-        ciphertext,
+      const { encryptedData, iv, authTag } = data;
+
+      workerRef.current.postMessage({
+        encryptedData,
         selectedAlgo,
         iv,
-        authTag
-      );
-      setTimeTaken(timeTaken);
+        authTag,
+        keys,
+      });
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   };
 
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../workers/decryptWorker.js", import.meta.url)
+    );
+
+    workerRef.current.onmessage = (event) => {
+      const { decryptedData, timeTaken } = event.data;
+      console.log(event.data);
+      setTimeTaken(timeTaken);
+    };
+
+    workerRef.current.onerror = (err) => {
+      console.log(err);
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+    };
+
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+    };
+  }, []);
+
   return (
     <div className="flex flex-col items-center w-full h-screen">
-      <h1 className="text-3xl font-bold m-[100px]">Encryption Analysis</h1>
-      <div className="flex flex-col items-center gap-[50px]">
-        <div className="w-[400px] space-y-4">
+      <h1 className="text-3xl w-full text-center font-bold m-[100px]">
+        Encryption Analysis
+      </h1>
+      <div className="flex flex-col w-[400px] max-w-[90%] items-center gap-[50px]">
+        <div className="space-y-4">
           <select
             value={selectedAlgo}
             onChange={handleAlgoChange}
